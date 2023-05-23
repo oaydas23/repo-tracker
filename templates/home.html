@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Github Latest Real Changes
+{% endblock %}
+
+{% block main %}
+<form action="/" method="post">
+    <div class="col-md-auto">
+        <div class="p-1">
+            <h1 class="d-flex justify-content-center">
+                <button class="btn-lg" name="refresh" value="" type="submit">Refresh Data</button>
+            </h1>
+        </div>
+    </div>
+</form>
+<table class="table table-striped" action="/">
+    <thead>
+        <tr>
+            <th>Repository</th>
+            <th class="w-50">Commit</th>
+            <th>Author</th>
+            <th>Date</th>
+            <th>Archived</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
