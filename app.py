@@ -89,8 +89,6 @@ def index():
                     change = True
             count += 1
             print("PROGRESS: ", round((count/349)*100, 2), "%")
-            if count == 350:
-                break
 
         cursor.execute("SELECT repo, message, author, date, archive FROM dataREAL")
         data = cursor.fetchall()
