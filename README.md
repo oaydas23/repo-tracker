@@ -1,0 +1,1 @@
+The purpose of this program is to track the last real change or change in code made to a repository. It can help filter necessary and unnecessary repositories or find the latest additions.
