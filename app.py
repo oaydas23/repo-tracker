@@ -90,7 +90,7 @@ def index():
             count += 1
             print("PROGRESS: ", round((count/349)*100, 2), "%")
 
-        cursor.execute("SELECT repo, message, author, date, archive FROM dataREAL")
+        cursor.execute("SELECT repo, message, author, date, archive FROM dataREAL ORDER BY ASC")
         data = cursor.fetchall()
 
         table.commit()
