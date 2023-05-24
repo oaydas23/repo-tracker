@@ -14,9 +14,53 @@ app = Flask(__name__)
 # wow = cursor.fetchall()
 # print(wow)
 
-
-@app.route("/", methods=["POST", "GET"])
+@app.route("/", methods=["GET"])
 def index():
+    return render_template("home.html")
+
+
+@app.route("/artifact", methods=["GET", "POST"])
+def artifact():
+    table = sqlite3.connect('database.db')
+    cursor = table.cursor()
+
+    cursor.execute("CREATE TABLE IF NOT EXISTS gradle ("
+                   "id INTEGER PRIMARY KEY, "
+                   "pname TEXT, "
+                   "gname TEXT, "
+                   "bnum TEXT, "
+                   "bdate TEXT, "
+                   "artifacts TEXT)"
+                   )
+
+    if request.method == "GET":
+        cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM gradle")
+        gradle_input = cursor.fetchall()
+
+        return render_template("artifacts.html", input=gradle_input)
+
+    if request.method == "POST":
+        pname = request.form.get("pname")
+        gname = request.form.get("gname")
+        bnum = request.form.get("bnum")
+        bdate = request.form.get("bdate")
+        artifacts = request.form.get("artifacts")
+
+        cursor.execute("INSERT OR IGNORE INTO gradle (pname, gname, bnum, bdate, artifacts) "
+                       "VALUES(?, ?, ?, ?, ?)",
+                       (pname, gname, bnum, bdate, artifacts))
+
+        cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM gradle")
+        gradle_input = cursor.fetchall()
+
+        table.commit()
+        return render_template("artifacts.html", input=gradle_input)
+
+    table.close()
+
+
+@app.route("/commit", methods=["POST", "GET"])
+def commit():
     table = sqlite3.connect('database.db')
     cursor = table.cursor()
 
@@ -33,7 +77,7 @@ def index():
         cursor.execute("SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC")
         data = cursor.fetchall()
 
-        return render_template("home.html", data=data)
+        return render_template("commits.html", data=data)
 
     if request.method == "POST":
         change = False
@@ -94,10 +138,10 @@ def index():
         data = cursor.fetchall()
 
         table.commit()
-        return render_template("home.html", data=data)
+        return render_template("commits.html", data=data)
     table.close()
 
-# excel file code
+# printing excel file code
 # transpose = list(zip(*data.values()))
 
 # filename = 'output.csv'
