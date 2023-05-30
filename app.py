@@ -1,5 +1,5 @@
 from github import Github
-import csv
+# import csv
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 
@@ -40,11 +40,12 @@ def artifact():
         return render_template("artifacts.html", input=gradle_input)
 
     if request.method == "POST":
-        pname = request.form.get("pname")
-        gname = request.form.get("gname")
-        bnum = request.form.get("bnum")
-        bdate = request.form.get("bdate")
-        artifacts = request.form.get("artifacts")
+        data = request.get_json()
+        pname = data["pname"]
+        gname = data["gname"]
+        bnum = data["bnum"]
+        bdate = data["bdate"]
+        artifacts = data["artifacts"]
 
         cursor.execute("INSERT OR IGNORE INTO gradle (pname, gname, bnum, bdate, artifacts) "
                        "VALUES(?, ?, ?, ?, ?)",
