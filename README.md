@@ -1,1 +1,8 @@
-The purpose of this program is to track the last real change or change in code made to a repository. It can help filter necessary and unnecessary repositories or find the latest additions.
+The following program is for the purpose of organization with regard to repository commits and gradle. 
+
+Grade still to be worked on...
+
+To run on Docker input the following code in terminal
+
+1. docker image build -t repo-tracker .
+2. docker run -dp 5000:5000 --mount type=volume,src=todo-db,target=/app/data repo-tracker
