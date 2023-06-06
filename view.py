@@ -6,7 +6,7 @@ from flask import Flask, render_template, request
 from datetime import datetime
 
 
-g = Github("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")
+g = Github("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")
 org = g.get_organization("MadDogTechnology")
 
 app = Flask(__name__)
@@ -34,7 +34,6 @@ def artifact():
     if request.method == "GET":
         cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM gradle")
         gradle_input = cursor.fetchall()
-
         return render_template("artifacts.html", input=gradle_input)
 
     if request.method == "POST":
@@ -118,20 +117,17 @@ def commit():
                         archive = str(repo.archived)
 
                         # database code
-                        cursor.execute("SELECT id FROM dataREAL WHERE repo = ? AND message = ?", (rep, c))
+                        cursor.execute("SELECT id FROM dataREAL WHERE repo = ?", (rep,))
                         check = cursor.fetchall()
-
-                        if not check:
+                        if check:
+                            cursor.execute("DELETE FROM dataREAL WHERE repo = ?", (rep,))
                             cursor.execute("INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
                                            "VALUES(?, ?, ?, ?, ?)",
                                            (rep, c, author, date, archive))
-
-                        # excel file code
-                        # data["repo"].append(repo.name)
-                        # data["commit"].append(latest_commit.commit.message)
-                        # data["author"].append(latest_commit.commit.author.name)
-                        # data["date"].append(latest_commit.commit.author.date)
-                        # data["archived"].append(repo.archived)
+                        else:
+                            cursor.execute("INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
+                                           "VALUES(?, ?, ?, ?, ?)",
+                                           (rep, c, author, date, archive))
 
                         change = True
                 else:
@@ -145,17 +141,6 @@ def commit():
         table.commit()
         return render_template("commits.html", data=data)
     table.close()
-
-# printing excel file code
-# transpose = list(zip(*data.values()))
-
-# filename = 'output.csv'
-
-# with open(filename, 'w', newline='') as csvfile:
-    # writer = csv.writer(csvfile)
-    # cat = ["Repo", "Commit", "Author", "Date", "Archive"]
-    # writer.writerow(cat)
-    # writer.writerows(transpose)
 
 
 if __name__ == "__main__":
