@@ -18,17 +18,18 @@ def index():
 
 @app.route("/artifact", methods=["GET", "POST"])
 def artifact():
-    table = sqlite3.connect('data/database.db')
+    table = sqlite3.connect("data/database.db")
     cursor = table.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS gradle ("
-                   "id INTEGER PRIMARY KEY, "
-                   "pname TEXT, "
-                   "gname TEXT, "
-                   "bnum TEXT, "
-                   "bdate TEXT, "
-                   "artifacts TEXT)"
-                   )
+    cursor.execute(
+        "CREATE TABLE IF NOT EXISTS gradle ("
+        "id INTEGER PRIMARY KEY, "
+        "pname TEXT, "
+        "gname TEXT, "
+        "bnum TEXT, "
+        "bdate TEXT, "
+        "artifacts TEXT)"
+    )
 
     if request.method == "GET":
         cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM gradle")
@@ -49,9 +50,11 @@ def artifact():
         for art in data["artifacts"]:
             artifacts = artifacts + art + "\n"
 
-        cursor.execute("INSERT OR IGNORE INTO gradle (pname, gname, bnum, bdate, artifacts) "
-                       "VALUES(?, ?, ?, ?, ?)",
-                       (pname, gname, bnum, bdate, artifacts))
+        cursor.execute(
+            "INSERT OR IGNORE INTO gradle (pname, gname, bnum, bdate, artifacts) "
+            "VALUES(?, ?, ?, ?, ?)",
+            (pname, gname, bnum, bdate, artifacts),
+        )
 
         cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM gradle")
         gradle_input = cursor.fetchall()
@@ -64,20 +67,23 @@ def artifact():
 
 @app.route("/commit", methods=["POST", "GET"])
 def commit():
-    table = sqlite3.connect('data/database.db')
+    table = sqlite3.connect("data/database.db")
     cursor = table.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS dataREAL ("
-                   "id INTEGER PRIMARY KEY, "
-                   "repo TEXT, "
-                   "message TEXT, "
-                   "author TEXT, "
-                   "date TEXT, "
-                   "archive TEXT)"
-                   )
+    cursor.execute(
+        "CREATE TABLE IF NOT EXISTS dataREAL ("
+        "id INTEGER PRIMARY KEY, "
+        "repo TEXT, "
+        "message TEXT, "
+        "author TEXT, "
+        "date TEXT, "
+        "archive TEXT)"
+    )
 
     if request.method == "GET":
-        cursor.execute("SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC")
+        cursor.execute(
+            "SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC"
+        )
         data = cursor.fetchall()
 
         return render_template("commits.html", data=data)
@@ -119,22 +125,30 @@ def commit():
                         cursor.execute("SELECT id FROM dataREAL WHERE repo = ?", (rep,))
                         check = cursor.fetchall()
                         if check:
-                            cursor.execute("DELETE FROM dataREAL WHERE repo = ?", (rep,))
-                            cursor.execute("INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
-                                           "VALUES(?, ?, ?, ?, ?)",
-                                           (rep, c, author, date, archive))
+                            cursor.execute(
+                                "DELETE FROM dataREAL WHERE repo = ?", (rep,)
+                            )
+                            cursor.execute(
+                                "INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
+                                "VALUES(?, ?, ?, ?, ?)",
+                                (rep, c, author, date, archive),
+                            )
                         else:
-                            cursor.execute("INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
-                                           "VALUES(?, ?, ?, ?, ?)",
-                                           (rep, c, author, date, archive))
+                            cursor.execute(
+                                "INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
+                                "VALUES(?, ?, ?, ?, ?)",
+                                (rep, c, author, date, archive),
+                            )
 
                         change = True
                 else:
                     change = True
             count += 1
-            print("PROGRESS: ", round((count/349)*100, 2), "%")
+            print("PROGRESS: ", round((count / 349) * 100, 2), "%")
 
-        cursor.execute("SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC")
+        cursor.execute(
+            "SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC"
+        )
         data = cursor.fetchall()
 
         table.commit()
@@ -143,5 +157,5 @@ def commit():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
