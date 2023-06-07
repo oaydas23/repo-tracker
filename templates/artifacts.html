@@ -6,6 +6,29 @@
 
 {% block main %}
 
+<style>
+    .bg-image {
+        background-image: url("https://images.unsplash.com/photo-1454117096348-e4abbeba002c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d2Vic2l0ZSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D&w=1000&q=80");
+        background-size: cover;
+        background-position: center;
+    }
+        .table-header {
+            background-color: #ffffff;
+        }
+
+        #table-artifacts_wrapper .dataTables_filter {
+            margin-top: 10px;
+        } 
+
+        #table-artifacts_wrapper .dataTables_filter input {
+            background-color: white;
+          }
+
+          #table-artifacts_wrapper .dataTables_length {
+            margin-top: 10px;
+        }
+    </style>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script>
@@ -13,7 +36,8 @@
         $('#table-artifacts').DataTable();
     });
     </script>
-
+    <body class="bg-image">
+    </body>
     <table id = "table-artifacts" class="table table-striped">
         <thead>
             <tr>
