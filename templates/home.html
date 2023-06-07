@@ -6,23 +6,35 @@
 
 {% block main %}
 
-<form action="/commit" method="get">
-    <div class="col-md-auto">
-        <div class="p-1">
-            <h1 class="d-flex justify-content-center">
-                <button class="btn-lg" name="commit" value="" type="submit">Show Latest Commits</button>
-            </h1>
+<div class="spacer"></div>
+
+
+<style>
+    .spacer {
+      margin-top: 375px; /* Adjust the value as needed */
+    }
+    </style>
+
+
+    <form action="/commit" method="get">
+        <div class="col-md-auto">
+            <div class="p-1">
+                <h1 class="d-flex justify-content-center">
+                    <button class="btn btn-primary rounded-pill btn-lg px-30" name="commit" value="" type="submit">Show Latest Commits</button>
+                </h1>
+            </div>
         </div>
-    </div>
-</form>
-<form action="/artifact" method="get">
-    <div class="col-md-auto">
-        <div class="p-1">
-            <h1 class="d-flex justify-content-center">
-                <button class="btn-lg" name="artifact" value="" type="submit">Add & Display Gradle Changes</button>
-            </h1>
+    </form>
+    <form action="/artifact" method="get">
+        <div class="col-md-auto">
+            <div class="p-1">
+                <h1 class="d-flex justify-content-center">
+                    <button class="btn btn-warning rounded-pill btn-lg px-30" name="artifact" value="" type="submit">Add & Display Gradle Changes</button>
+                </h1>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+
+
 
 {% endblock %}

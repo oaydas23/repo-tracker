@@ -5,7 +5,16 @@
 {% endblock %}
 
 {% block main %}
-    <table class="table table-striped">
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#table-artifacts').DataTable();
+    });
+    </script>
+
+    <table id = "table-artifacts" class="table table-striped">
         <thead>
             <tr>
                 <th>Project Name</th>
