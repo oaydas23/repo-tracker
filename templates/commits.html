@@ -6,27 +6,7 @@ Github Latest Real Changes
 
 {% block main %}
 
-<style>
-    .bg-image {
-        background-image: url("https://images.pexels.com/photos/19670/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
-        background-size: cover;
-        background-position: center;
-    }
-
-    .table-header {
-        background-color: #ffffff;
-    }
-
-    #commit-table_wrapper .dataTables_filter {
-        margin-bottom: 20px;
-    }
-
-    #commit-table_wrapper .dataTables_filter input {
-        background-color: white;
-    }
-</style>
-
-<body class="bg-image">
+<body class="bg-image2">
     <form action="/commit" method="post">
         <div class="col-md-auto">
             <div class="p-1">
@@ -79,5 +59,4 @@ Github Latest Real Changes
         {% endfor %}
     </tbody>
 </table>
-
 {% endblock %}

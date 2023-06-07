@@ -1,31 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Menu
+Menu
 {% endblock %}
 
 {% block main %}
 
 <div class="spacer"></div>
-
-
-<style>
-    .spacer {
-        margin-top: 375px; /* Adjust the value as needed */
-    }
-
-    .bg-image {
-        background-image: url("https://coolbackgrounds.io/images/backgrounds/index/aqua-d9b59c89.png");
-        background-size: cover;
-        background-position: center;
-    }
-
-    .text-center {
-        margin-top: 300px; 
-        font-size: 36px;
-        font-family: Arial, Monospace;
-    }
-</style>
 
 <body class="bg-image">
     <div class="text-center">
@@ -35,7 +16,8 @@
         <div class="col-md-auto">
             <div class="p-1">
                 <h1 class="d-flex justify-content-center">
-                    <button class="btn btn-primary rounded-pill btn-lg px-30" name="commit" value="" type="submit">Show Latest Commits</button>
+                    <button class="btn btn-primary rounded-pill btn-lg px-30" name="commit" value="" type="submit">Show
+                        Latest Commits</button>
                 </h1>
             </div>
         </div>
@@ -44,7 +26,8 @@
         <div class="col-md-auto">
             <div class="p-1">
                 <h1 class="d-flex justify-content-center">
-                    <button class="btn btn-warning rounded-pill btn-lg px-30" name="artifact" value="" type="submit">Add & Display Gradle Changes</button>
+                    <button class="btn btn-warning rounded-pill btn-lg px-30" name="artifact" value="" type="submit">Add
+                        & Display Gradle Changes</button>
                 </h1>
             </div>
         </div>
@@ -53,4 +36,3 @@
 
 
 {% endblock %}
-

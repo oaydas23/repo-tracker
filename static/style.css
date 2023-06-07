@@ -1,0 +1,43 @@
+.spacer {
+  margin-top: 375px; /* Adjust the value as needed */
+}
+
+.bg-image {
+  background-image: url("https://coolbackgrounds.io/images/backgrounds/index/aqua-d9b59c89.png");
+  background-size: cover;
+}
+
+.text-center {
+  margin-top: 300px;
+  font-size: 36px;
+  font-family: Arial, Monospace;
+}
+
+.bg-image2 {
+  background-image: url("https://images.pexels.com/photos/19670/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+  background-size: cover;
+}
+
+.table-header {
+  background-color: #ffffff;
+}
+
+#table-artifacts_wrapper .dataTables_filter {
+  margin-top: 10px;
+}
+
+#table-artifacts_wrapper .dataTables_filter input {
+  background-color: white;
+}
+
+#table-artifacts_wrapper .dataTables_length {
+  margin-top: 10px;
+}
+
+#commit-table_wrapper .dataTables_filter {
+  margin-bottom: 20px;
+}
+
+#commit-table_wrapper .dataTables_filter input {
+  background-color: white;
+}
