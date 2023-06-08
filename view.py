@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 from datetime import datetime
 
 
-g = Github("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")
+g = Github("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")
 org = g.get_organization("MadDogTechnology")
 
 app = Flask(__name__)
@@ -94,6 +94,7 @@ def commit():
         count = 0
 
         repos = list(org.get_repos())
+        total = len(repos)
 
         for repo in repos:
             change = False
@@ -107,6 +108,7 @@ def commit():
                         print("EMPTY REP")
                         change = True
 
+                # checks if all commits are README
                 length = len(commits)
 
                 if i < length:
@@ -144,7 +146,7 @@ def commit():
                 else:
                     change = True
             count += 1
-            print("PROGRESS: ", round((count / 349) * 100, 2), "%")
+            print("PROGRESS: ", round((count / total) * 100, 2), "%")
 
         cursor.execute(
             "SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC"

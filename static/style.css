@@ -41,3 +41,11 @@
 #commit-table_wrapper .dataTables_filter input {
   background-color: white;
 }
+
+#progress-bar {
+  width: 0;
+  height: 30px;
+  background-color: #4caf50;
+  transition: width 1s ease-in-out;
+  display: none;
+}
