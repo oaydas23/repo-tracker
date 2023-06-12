@@ -32,7 +32,46 @@ Menu
             </div>
         </div>
     </form>
-</body>
+    
+    <div id="container">
+        <div id="object"></div>
+    </div>
+    
+    <style>
+        #container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #object {
+            width: 250px;
+            height: 250px;
+            position: absolute;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCU_o0z-oVhnHrCRDJrHzpEq29Lp28yZYAi242Z9P8RQ&usqp=CAU&ec=48665701');
+            background-size: cover;
+        }
+    </style>
+    
+    <script>
+        var object = document.getElementById("object");
+        var containerWidth = document.getElementById("container").offsetWidth;
+        var objectWidth = object.offsetWidth;
+        var currentPosition = 0;
+        var direction = 1;
+        var speed = 2;
 
+        setInterval(function() {
+            currentPosition += speed * direction;
+            object.style.left = currentPosition + "px";
+
+            if (currentPosition >= containerWidth - objectWidth || currentPosition <= 0) {
+                direction *= -1;
+            }
+        }, 20);
+    </script>
+
+</body>
 
 {% endblock %}
