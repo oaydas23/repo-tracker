@@ -6,11 +6,23 @@
   <title>Register</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-  <style>
-    .button-spacing {
-      margin-top: 10px;
-    }
-  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const passwordInput = document.querySelector('input[name="password"]');
+      const validationMessage = document.getElementById('password-validation-message');
+      const passwordPattern = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>/?]).*$/;
+      
+      passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        if (passwordPattern.test(password)) {
+          validationMessage.style.display = 'none';
+        } else {
+          validationMessage.style.display = 'block';
+        }
+      });
+    });
+  </script>
 </head>
 <body>
   <section class="hero is-info is-fullheight">
@@ -35,6 +47,11 @@
                   <span class="icon is-small is-left">
                     <i class="fas fa-lock"></i>
                   </span>
+                </p>
+              </div>
+              <div class="field">
+                <p id="password-validation-message" class="text-decoration-underline" style="display: none;">
+                  Password must contain at least eight characters, one capital letter, and a special character.
                 </p>
               </div>
               <div class="field">

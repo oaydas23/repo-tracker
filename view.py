@@ -12,6 +12,7 @@ import requests
 import urllib.parse
 from random import sample
 from flask_session import Session
+import re
 
 from functools import wraps
 
@@ -99,13 +100,11 @@ def logout():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-
     session.clear()
     table = sqlite3.connect("data/database.db")
     cursor = table.cursor()
-    # User reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
 
+    if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
             return render_template("register.html")
@@ -114,13 +113,17 @@ def register():
         elif not request.form.get("password"):
             return render_template("register.html")
 
-        elif not request.form.get("confirmation"):
+        password = request.form.get("password")
+
+        # Ensure password meets the requirements
+        if len(password) < 8 or not re.search(r"[A-Z]", password) or not re.search(r"[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>/?]", password):
             return render_template("register.html")
 
-        elif request.form.get("confirmation") != request.form.get("password"):
+        # Ensure confirmation matches the password
+        elif request.form.get("confirmation") != password:
             return render_template("register.html")
 
-        # Query database for username
+        # Query database for existing username
         cursor.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
         rows = cursor.fetchall()
 
@@ -129,18 +132,18 @@ def register():
 
         # Insert username and password
         cursor.execute("INSERT INTO users (username, hash) VALUES(?, ?)", (request.form.get(
-            "username"), generate_password_hash(request.form.get("password"))))
+            "username"), generate_password_hash(password)))
 
         cursor.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
         rows = cursor.fetchall()
         session["user_id"] = rows[0][0]
-        # Redirect user to login
+
         table.commit()
         return redirect("/")
 
-    # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html")
+
     
 
 @app.route("/artifact", methods=["GET", "POST"])
@@ -288,5 +291,5 @@ def commit():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 1234))
     app.run(debug=True, host="0.0.0.0", port=port)

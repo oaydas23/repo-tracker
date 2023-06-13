@@ -37,23 +37,7 @@ Menu
         <div id="object"></div>
     </div>
     
-    <script>
-        var object = document.getElementById("object");
-        var containerWidth = document.getElementById("container").offsetWidth;
-        var objectWidth = object.offsetWidth;
-        var currentPosition = 0;
-        var direction = 1;
-        var speed = 2;
-
-        setInterval(function() {
-            currentPosition += speed * direction;
-            object.style.left = currentPosition + "px";
-
-            if (currentPosition >= containerWidth - objectWidth || currentPosition <= 0) {
-                direction *= -1;
-            }
-        }, 20);
-    </script>
+    <script src="static/script.js"></script>
 
 </body>
 
