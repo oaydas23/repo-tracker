@@ -15,6 +15,7 @@ import urllib.parse
 from random import sample
 import re
 from functools import wraps
+import psycopg2
 
 # Github Token
 # /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,59 +27,17 @@ app = Flask(__name__)
 
 # PostgreSQL Database
 # /////////////////////////////////////////////////////////////////////////////////////////////////
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = "postgresql://postgres:password@localhost:5000/repo"
-db = SQLAlchemy(app)
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost:8080/repo"
+# db = SQLAlchemy(app)
 
+table = psycopg2.connect(
+    database="postgres",
+    user="postgres",
+    password="password",
+    host="database"
+)
 
-# Commit Table
-class Commit(db.Model):
-    __tablename__ = "commits"
-    id = db.Column(db.Integer, primary_key=True)
-    repo = db.Column(db.String)
-    message = db.Column(db.String)
-    author = db.Column(db.String)
-    date = db.Column(db.String)
-    archive = db.Column(db.String)
-
-    def __init__(self, repo, message, author, date, archive):
-        self.repo = repo
-        self.message = message
-        self.author = author
-        self.date = date
-        self.archive = archive
-
-
-# Gradle Table
-class Gradle(db.Model):
-    __tablename__ = "gradle"
-    id = db.Column(db.Integer, primary_key=True)
-    pname = db.Column(db.String)
-    gname = db.Column(db.String)
-    bnum = db.Column(db.String)
-    bdate = db.Column(db.String)
-    artifacts = db.Column(db.String)
-
-    def __init__(self, pname, gname, bnum, bdate, artifacts):
-        self.pname = pname
-        self.gname = gname
-        self.bnum = bnum
-        self.bdate = bdate
-        self.artifacts = artifacts
-
-
-# Users Table
-class User(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String)
-    hash = db.Column(db.String)
-
-    def __init__(self, username, hash):
-        self.username = username
-        self.hash = hash
-
+cursor = table.cursor()
 
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,8 +74,7 @@ def login_required(f):
 @app.route("/", methods=["GET"])
 @login_required
 def index():
-    db.create_all()
-
+    # db.create_all()
     return render_template("home.html")
 
 
@@ -129,10 +87,9 @@ def login():
     # Forget any user_id
 
     session.clear()
-    table = sqlite3.connect("data/database.db")
-    cursor = table.cursor()
+
     cursor.execute(
-        "CREATE TABLE IF NOT EXISTS users (id INTEGER, username TEXT NOT NULL, hash TEXT NOT NULL, PRIMARY KEY(id))"
+        "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT NOT NULL, hash TEXT NOT NULL)"
     )
 
     # User reached route via POST (as by submitting a form via POST)
@@ -147,7 +104,7 @@ def login():
 
         # Query database for username
         cursor.execute(
-            "SELECT * FROM users WHERE username = ?", (request.form.get("username"),)
+            "SELECT * FROM users WHERE username = (%s)", (request.form.get("username"),)
         )
         rows = cursor.fetchall()
 
@@ -161,10 +118,12 @@ def login():
         session["user_id"] = rows[0][0]
 
         # Redirect user to home page
+        table.commit()
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
+        table.commit()
         return render_template("login.html")
 
 
@@ -183,8 +142,6 @@ def logout():
 def register():
 
     session.clear()
-    table = sqlite3.connect("data/database.db")
-    cursor = table.cursor()
 
     if request.method == "POST":
         # Ensure username was submitted
@@ -210,7 +167,7 @@ def register():
         
         # Query database for existing username
         cursor.execute(
-            "SELECT * FROM users WHERE username = ?", (request.form.get("username"),)
+            "SELECT * FROM users WHERE username = (%s)", (request.form.get("username"),)
         )
         rows = cursor.fetchall()
 
@@ -224,12 +181,12 @@ def register():
         # db.session.commit()
 
         cursor.execute(
-            "INSERT INTO users (username, hash) VALUES(?, ?)",
+            "INSERT INTO users (username, hash) VALUES(%s, %s)",
             (request.form.get("username"), generate_password_hash(password)),
         )
 
         cursor.execute(
-            "SELECT * FROM users WHERE username = ?", (request.form.get("username"),)
+            "SELECT * FROM users WHERE username = (%s)", (request.form.get("username"),)
         )
         rows = cursor.fetchall()
 
@@ -247,12 +204,10 @@ def register():
 
 @app.route("/artifact", methods=["GET", "POST"])
 def artifact():
-    table = sqlite3.connect("data/database.db")
-    cursor = table.cursor()
 
     cursor.execute(
         "CREATE TABLE IF NOT EXISTS gradle ("
-        "id INTEGER PRIMARY KEY, "
+        "id SERIAL PRIMARY KEY, "
         "pname TEXT, "
         "gname TEXT, "
         "bnum TEXT, "
@@ -281,7 +236,7 @@ def artifact():
 
         cursor.execute(
             "INSERT OR IGNORE INTO gradle (pname, gname, bnum, bdate, artifacts) "
-            "VALUES(?, ?, ?, ?, ?)",
+            "VALUES(%s, %s, %s, %s, %s)",
             (pname, gname, bnum, bdate, artifacts),
         )
 
@@ -291,17 +246,13 @@ def artifact():
         table.commit()
         return render_template("artifacts.html", input=gradle_input)
 
-    table.close()
-
 
 @app.route("/commit", methods=["POST", "GET"])
 def commit():
-    table = sqlite3.connect("data/database.db")
-    cursor = table.cursor()
 
     cursor.execute(
         "CREATE TABLE IF NOT EXISTS dataREAL ("
-        "id INTEGER PRIMARY KEY, "
+        "id SERIAL PRIMARY KEY, "
         "repo TEXT, "
         "message TEXT, "
         "author TEXT, "
@@ -353,21 +304,21 @@ def commit():
                         archive = str(repo.archived)
 
                         # database code
-                        cursor.execute("SELECT id FROM dataREAL WHERE repo = ?", (rep,))
+                        cursor.execute("SELECT id FROM dataREAL WHERE repo = (%s)", (rep,))
                         check = cursor.fetchall()
                         if check:
                             cursor.execute(
-                                "DELETE FROM dataREAL WHERE repo = ?", (rep,)
+                                "DELETE FROM dataREAL WHERE repo = (%s)", (rep,)
                             )
                             cursor.execute(
-                                "INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
-                                "VALUES(?, ?, ?, ?, ?)",
+                                "INSERT INTO dataREAL (repo, message, author, date, archive) "
+                                "VALUES(%s, %s, %s, %s, %s)",
                                 (rep, c, author, date, archive),
                             )
                         else:
                             cursor.execute(
-                                "INSERT OR IGNORE INTO dataREAL (repo, message, author, date, archive) "
-                                "VALUES(?, ?, ?, ?, ?)",
+                                "INSERT INTO dataREAL (repo, message, author, date, archive) "
+                                "VALUES(%s, %s, %s, %s, %s)",
                                 (rep, c, author, date, archive),
                             )
 
@@ -384,7 +335,6 @@ def commit():
 
         table.commit()
         return render_template("commits.html", data=data)
-    table.close()
 
 
 if __name__ == "__main__":
