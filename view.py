@@ -74,7 +74,7 @@ def login_required(f):
 @app.route("/", methods=["GET"])
 @login_required
 def index():
-    # db.create_all()
+
     return render_template("home.html")
 
 
@@ -175,11 +175,6 @@ def register():
             return render_template("register.html")
         
         # Insert username and password
-
-        # user=User(request.form.get("username"), generate_password_hash(request.form.get("password")))
-        # db.session.add(user)
-        # db.session.commit()
-
         cursor.execute(
             "INSERT INTO users (username, hash) VALUES(%s, %s)",
             (request.form.get("username"), generate_password_hash(password)),

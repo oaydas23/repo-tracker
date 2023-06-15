@@ -17,8 +17,6 @@ group = 'com.resolute'
 var baseVersion = "3"
 var releaseNum = "85"
 
-
-
 repositories {
     mavenCentral()
 }
@@ -50,7 +48,7 @@ task postExample {
                 "bdate": "XX-XX-XXXX XX:XX:XX",
                 "artifacts": artifactNames
         ]
-        def req = new URL('http://localhost:5000/artifact').openConnection()
+        def req = new URL('http://localhost:1000/artifact').openConnection()
         req.setRequestMethod("POST")
         req.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
         req.setDoOutput(true)
