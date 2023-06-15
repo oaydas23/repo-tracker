@@ -6,7 +6,15 @@ Menu
 
 {% block main %}
 
-<div class="spacer"></div>
+<form action="/logout">
+    <div class="col-md-auto">
+        <div class="p-1">
+            <h1 class="d-flex justify-content-center">
+                <button class="btn btn-danger rounded-pill btn-lg px-30" name="logout" value="" type="submit">Logout</button>
+            </h1>
+        </div>
+    </div>
+</form>
 
 <body class="bg-image">
     <div class="text-center">
