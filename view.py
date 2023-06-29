@@ -31,10 +31,10 @@ app = Flask(__name__)
 # db = SQLAlchemy(app)
 
 table = psycopg2.connect(
-    database="postgres",
-    user="postgres",
-    password="password",
-    host="database"
+    database="resolute_cloud_dev",
+    user="postgresadmin",
+    password="gzaUjNfp2K$q0sxQ#^N9",
+    host="postgres1-db.dc.res0.local"
 )
 
 cursor = table.cursor()
@@ -89,7 +89,7 @@ def login():
     session.clear()
 
     cursor.execute(
-        "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT NOT NULL, hash TEXT NOT NULL)"
+        "CREATE TABLE IF NOT EXISTS repo_tracker_users (id SERIAL PRIMARY KEY, username TEXT NOT NULL, hash TEXT NOT NULL)"
     )
 
     # User reached route via POST (as by submitting a form via POST)
@@ -104,7 +104,7 @@ def login():
 
         # Query database for username
         cursor.execute(
-            "SELECT * FROM users WHERE username = (%s)", (request.form.get("username"),)
+            "SELECT * FROM repo_tracker_users WHERE username = (%s)", (request.form.get("username"),)
         )
         rows = cursor.fetchall()
 
@@ -167,7 +167,7 @@ def register():
         
         # Query database for existing username
         cursor.execute(
-            "SELECT * FROM users WHERE username = (%s)", (request.form.get("username"),)
+            "SELECT * FROM repo_tracker_users WHERE username = (%s)", (request.form.get("username"),)
         )
         rows = cursor.fetchall()
 
@@ -176,12 +176,12 @@ def register():
         
         # Insert username and password
         cursor.execute(
-            "INSERT INTO users (username, hash) VALUES(%s, %s)",
+            "INSERT INTO repo_tracker_users (username, hash) VALUES(%s, %s)",
             (request.form.get("username"), generate_password_hash(password)),
         )
 
         cursor.execute(
-            "SELECT * FROM users WHERE username = (%s)", (request.form.get("username"),)
+            "SELECT * FROM repo_tracker_users WHERE username = (%s)", (request.form.get("username"),)
         )
         rows = cursor.fetchall()
 
@@ -201,7 +201,7 @@ def register():
 def artifact():
 
     cursor.execute(
-        "CREATE TABLE IF NOT EXISTS gradle ("
+        "CREATE TABLE IF NOT EXISTS repo_tracker_gradle ("
         "id SERIAL PRIMARY KEY, "
         "pname TEXT, "
         "gname TEXT, "
@@ -211,7 +211,7 @@ def artifact():
     )
 
     if request.method == "GET":
-        cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM gradle")
+        cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM repo_tracker_gradle")
         gradle_input = cursor.fetchall()
         return render_template("artifacts.html", input=gradle_input)
 
@@ -230,12 +230,12 @@ def artifact():
             artifacts = artifacts + art + "\n"
 
         cursor.execute(
-            "INSERT OR IGNORE INTO gradle (pname, gname, bnum, bdate, artifacts) "
+            "INSERT OR IGNORE INTO repo_tracker_gradle (pname, gname, bnum, bdate, artifacts) "
             "VALUES(%s, %s, %s, %s, %s)",
             (pname, gname, bnum, bdate, artifacts),
         )
 
-        cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM gradle")
+        cursor.execute("SELECT pname, gname, bnum, bdate, artifacts FROM repo_tracker_gradle")
         gradle_input = cursor.fetchall()
 
         table.commit()
@@ -246,7 +246,7 @@ def artifact():
 def commit():
 
     cursor.execute(
-        "CREATE TABLE IF NOT EXISTS dataREAL ("
+        "CREATE TABLE IF NOT EXISTS repo_tracker_commits ("
         "id SERIAL PRIMARY KEY, "
         "repo TEXT, "
         "message TEXT, "
@@ -257,7 +257,7 @@ def commit():
 
     if request.method == "GET":
         cursor.execute(
-            "SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC"
+            "SELECT repo, message, author, date, archive FROM repo_tracker_commits ORDER BY date ASC"
         )
         data = cursor.fetchall()
 
@@ -299,20 +299,20 @@ def commit():
                         archive = str(repo.archived)
 
                         # database code
-                        cursor.execute("SELECT id FROM dataREAL WHERE repo = (%s)", (rep,))
+                        cursor.execute("SELECT id FROM repo_tracker_commits WHERE repo = (%s)", (rep,))
                         check = cursor.fetchall()
                         if check:
                             cursor.execute(
-                                "DELETE FROM dataREAL WHERE repo = (%s)", (rep,)
+                                "DELETE FROM repo_tracker_commits WHERE repo = (%s)", (rep,)
                             )
                             cursor.execute(
-                                "INSERT INTO dataREAL (repo, message, author, date, archive) "
+                                "INSERT INTO repo_tracker_commits (repo, message, author, date, archive) "
                                 "VALUES(%s, %s, %s, %s, %s)",
                                 (rep, c, author, date, archive),
                             )
                         else:
                             cursor.execute(
-                                "INSERT INTO dataREAL (repo, message, author, date, archive) "
+                                "INSERT INTO repo_tracker_commits (repo, message, author, date, archive) "
                                 "VALUES(%s, %s, %s, %s, %s)",
                                 (rep, c, author, date, archive),
                             )
@@ -324,7 +324,7 @@ def commit():
             print("PROGRESS: ", round((count / total) * 100, 2), "%")
 
         cursor.execute(
-            "SELECT repo, message, author, date, archive FROM dataREAL ORDER BY date ASC"
+            "SELECT repo, message, author, date, archive FROM repo_tracker_commits ORDER BY date ASC"
         )
         data = cursor.fetchall()
 
