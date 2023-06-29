@@ -1,8 +1,6 @@
 services:
   ourapp:
     build: .
-    depends_on:
-      - database
     ports:
       - "1000:1000"
   
