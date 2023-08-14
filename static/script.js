@@ -12,7 +12,7 @@ $(document).ready(function () {
 function progressBar() {
     var progressBar = document.getElementById("progress-bar");
     progressBar.style.display = "block";
-    var duration = 15 * 60 * 1000; // 15 minutes in milliseconds
+    var duration = 3 * 60 * 1000; // 15 minutes in milliseconds
     var interval = 100; // Update interval in milliseconds
     var increment = (interval / duration) * 100; // Progress increment per update
 
