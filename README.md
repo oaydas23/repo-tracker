@@ -16,14 +16,23 @@ To run this application, make sure you have the following installed:
 ### GitHub Token
 
 1. Obtain a personal access token from GitHub with the necessary permissions.
-2. Replace the placeholder value for `g` in the code with your GitHub access token.
 
 ## Usage
 
-To run the Flask application, execute the following command:
+To run the Flask application, first change the environment variables in .env file:
+
+```
+export HOST=HOSTNAME
+export DATABASE=DATABASE
+export USER=USER
+export PASSWORD=PASSWORD
+export TOKEN=TOKEN
+```
+
+Then execute the following command:
 
 ```bash
-docker compose up 
+docker compose up
 ```
 
 The application will start running on http://localhost:1000/.
