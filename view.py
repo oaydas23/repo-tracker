@@ -29,7 +29,7 @@ app = Flask(__name__)
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 
 table = psycopg2.connect(
-    database=os.environ['DATABASE']
+    database=os.environ['DATABASE'],
     user=os.environ['USER'],
     password=os.environ['PASSWORD'],
     host=os.environ['HOST']
