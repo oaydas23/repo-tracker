@@ -20,7 +20,7 @@ import psycopg2
 # Github Token
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 organization = "maddogtechnology"
-token = "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"
+token = os.environ['TOKEN']
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 
 app = Flask(__name__)
@@ -29,10 +29,10 @@ app = Flask(__name__)
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 
 table = psycopg2.connect(
-    database="repo_tracker",
-    user="repo_tracker_app",
-    password="^$vd*VIr$PPbV59d",
-    host="postgres1-db.dc.res0.local"
+    database=os.environ['DATABASE']
+    user=os.environ['USER'],
+    password=os.environ['PASSWORD'],
+    host=os.environ['HOST']
 )
 
 cursor = table.cursor()
