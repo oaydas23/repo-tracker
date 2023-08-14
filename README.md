@@ -19,7 +19,7 @@ To run this application, make sure you have the following installed:
 
 ## Usage
 
-To run the Flask application, first change the environment variables in .env file:
+To run the Flask application, make an .env file with the following variables:
 
 ```
 export HOST=HOSTNAME
