@@ -19,22 +19,20 @@ import psycopg2
 
 # Github Token
 # /////////////////////////////////////////////////////////////////////////////////////////////////
-g = Github("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")
-org = g.get_organization("MadDogTechnology")
+organization = "maddogtechnology"
+token = "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"
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 
 app = Flask(__name__)
 
 # PostgreSQL Database
 # /////////////////////////////////////////////////////////////////////////////////////////////////
-# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost:8080/repo"
-# db = SQLAlchemy(app)
 
 table = psycopg2.connect(
-    database="resolute_cloud_dev",
-    user="postgresadmin",
-    password="gzaUjNfp2K$q0sxQ#^N9",
-    host="postgres1-db.dc.res0.local"
+    database="repo_tracker",
+    user="repo_tracker_app",
+    password="^$vd*VIr$PPbV59d",
+    host="repo_tracker_app"
 )
 
 cursor = table.cursor()
@@ -264,64 +262,73 @@ def commit():
         return render_template("commits.html", data=data)
 
     if request.method == "POST":
-        change = False
-        i = 0
-        count = 0
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github.v3+json"
+        }
 
-        repos = list(org.get_repos())
-        total = len(repos)
+        url = f"https://api.github.com/orgs/{organization}/repos"
 
-        for repo in repos:
-            change = False
-            i = 0
-            while not change:
-                # checks for empty repo
-                try:
-                    commits = list(repo.get_commits())
-                except Exception as e:
-                    if "This repository is empty" in str(e):
-                        print("EMPTY REP")
-                        change = True
+        repo_names = []
 
-                # checks if all commits are README
-                length = len(commits)
+        # Fetch all pages of repositories
+        while url:
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                repos = response.json()
+                repo_names.extend([repo["name"] for repo in repos])
+                
+                # Check for pagination
+                url = response.links.get("next", {}).get("url")
+            else:
+                print("Error:", response.status_code)
+                break
 
-                if i < length:
-                    latest_commit = commits[i]
-                    if "README" in latest_commit.commit.message.upper():
-                        change = False
-                        i += 1
-                    else:
-                        rep = str(repo.name)
-                        c = str(latest_commit.commit.message)
-                        author = str(latest_commit.commit.author.name)
-                        date = str(latest_commit.commit.author.date)
-                        archive = str(repo.archived)
+        i=0
+        for repo in repo_names:
+            i +=1
+            print (f"Progress: {i}")
 
-                        # database code
-                        cursor.execute("SELECT id FROM repo_tracker_commits WHERE repo = (%s)", (rep,))
-                        check = cursor.fetchall()
-                        if check:
-                            cursor.execute(
-                                "DELETE FROM repo_tracker_commits WHERE repo = (%s)", (rep,)
-                            )
-                            cursor.execute(
-                                "INSERT INTO repo_tracker_commits (repo, message, author, date, archive) "
-                                "VALUES(%s, %s, %s, %s, %s)",
-                                (rep, c, author, date, archive),
-                            )
-                        else:
-                            cursor.execute(
-                                "INSERT INTO repo_tracker_commits (repo, message, author, date, archive) "
-                                "VALUES(%s, %s, %s, %s, %s)",
-                                (rep, c, author, date, archive),
-                            )
+            url = f"https://api.github.com/repos/MadDogTechnology/{repo}"
+            response = requests.get(url, headers=headers)
 
-                        change = True
-                else:
-                    change = True
-            count += 1
-            print("PROGRESS: ", round((count / total) * 100, 2), "%")
+            try:
+                rep = response.json()['name']
+                archive = response.json()['archived']
+            except:
+                continue
+
+            url = f"https://api.github.com/repos/MadDogTechnology/{repo}/commits"
+            response = requests.get(url, headers=headers)
+
+            try:
+                count = 0
+                message = response.json()[count]['commit']['message']
+                while "README" in message.upper():
+                    count += 1
+                    message = response.json()[count]['commit']['message']
+
+                c = response.json()[count]['commit']['message']
+                author = response.json()[count]['commit']['author']['name']
+                date = response.json()[count]['commit']['author']['date']
+
+                cursor.execute(
+                    "INSERT INTO repo_tracker_commits (repo, message, author, date, archive) "
+                    "VALUES(%s, %s, %s, %s, %s)",
+                    (rep, c, author, date, archive),
+                )
+            except:
+                c = "N/A"
+                author = "N/A"
+                date = "N/A"
+
+                cursor.execute(
+                    "INSERT INTO repo_tracker_commits (repo, message, author, date, archive) "
+                    "VALUES(%s, %s, %s, %s, %s)",
+                    (rep, c, author, date, archive),
+                )
+                continue
 
         cursor.execute(
             "SELECT repo, message, author, date, archive FROM repo_tracker_commits ORDER BY date ASC"
