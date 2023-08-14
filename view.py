@@ -32,7 +32,7 @@ table = psycopg2.connect(
     database="repo_tracker",
     user="repo_tracker_app",
     password="^$vd*VIr$PPbV59d",
-    host="repo_tracker_app"
+    host="postgres1-db.dc.res0.local"
 )
 
 cursor = table.cursor()
